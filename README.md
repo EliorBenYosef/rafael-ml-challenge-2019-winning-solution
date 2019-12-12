@@ -4,7 +4,7 @@ This solution won the [**RAFAEL Machine Learning Challenge 2019**](http://portal
 
 Table of contents:
 
-* [The competition](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#the-competition)
+* [The Competition](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#the-competition)
 * [The Solution](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#the-solution) 
   * [Phase 1 - Neural Networks Training](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#phase-1---neural-networks-training)
   * [Phase 2 - Solution Algorithm](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#phase-2---solution-algorithm)
@@ -12,7 +12,7 @@ Table of contents:
 * [Algorithm Performance](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#algorithm-performance)
 * [Dependencies](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#dependencies) 
 
-## The competition
+## The Competition
 
 [RAFAEL](https://www.rafael.co.il/) (Advanced Defense Systems Ltd) 
 is a well-known Israeli defense tech company ([wiki](https://en.wikipedia.org/wiki/Rafael_Advanced_Defense_Systems)).
