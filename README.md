@@ -14,7 +14,7 @@ Table of contents:
 
 ## The Competition
 
-[RAFAEL](https://www.rafael.co.il/) (Advanced Defense Systems Ltd) 
+[RAFAEL Advanced Defense Systems Ltd.](https://www.rafael.co.il/) 
 is a well-known Israeli defense tech company ([wiki](https://en.wikipedia.org/wiki/Rafael_Advanced_Defense_Systems)).
 
 RAFAEL constructed a [game](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution/blob/master/Interceptor_V2.py) 
