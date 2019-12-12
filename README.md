@@ -1,8 +1,10 @@
+# RAFAEL Machine Learning Challenge 2019 winning solution
+
 This solution won the [**RAFAEL Machine Learning Challenge 2019**](http://portal.rafael.co.il/MLchallenge2019/Documents/index.html) competition.
 
 Table of contents:
 
-* [The RAFAEL Machine Learning Challenge 2019 competition](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#the-rafael-machine-learning-challenge-2019-competition)
+* [The competition](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#the-competition)
 * [The Solution](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#the-solution) 
   * [Phase 1 - Neural Networks Training](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#phase-1---neural-networks-training)
   * [Phase 2 - Solution Algorithm](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#phase-2---solution-algorithm)
@@ -10,7 +12,7 @@ Table of contents:
 * [Algorithm Performance](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#algorithm-performance)
 * [Dependencies](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#dependencies) 
 
-## The RAFAEL Machine Learning Challenge 2019 competition
+## The competition
 
 [RAFAEL](https://www.rafael.co.il/) (Advanced Defense Systems Ltd) 
 is a well-known Israeli defense tech company ([wiki](https://en.wikipedia.org/wiki/Rafael_Advanced_Defense_Systems)).
@@ -18,8 +20,8 @@ is a well-known Israeli defense tech company ([wiki](https://en.wikipedia.org/wi
 RAFAEL constructed a [game](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution/blob/master/Interceptor_V2.py) 
 in which you play a defending turret which intercepts enemy rockets fired at two cities.  
 
-The [competition](http://portal.rafael.co.il/MLchallenge2019/Documents/index.html) 
-was to write an ML-based software that plays the game independently, and gets the highest score.
+The [RAFAEL Machine Learning Challenge 2019](http://portal.rafael.co.il/MLchallenge2019/Documents/index.html) 
+competition was to write an ML-based software that plays the game independently, and gets the highest score.
 
 ## The Solution
 
