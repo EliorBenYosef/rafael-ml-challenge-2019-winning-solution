@@ -2,6 +2,8 @@
 
 This algorithm won the [**RAFAEL Machine Learning Challenge 2019**](http://portal.rafael.co.il/MLchallenge2019/Documents/index.html) competition.
 
+The algorithm uses a total of **7 neural networks** to choose and intercept the highest-profile rocket, at any given moment.
+
 Table of contents:
 
 * [The Competition](https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution#the-competition)
@@ -41,7 +43,7 @@ Neural Networks:
 
 ### Phase 2 - Solution Algorithm
 
-A decision-making algorithm, which chooses the highest-profile rocket (target) according to:
+A decision-making algorithm, which chooses the highest-profile rocket, according to the following criteria:
 * **Interceptability**.
 * **Threat level** - hitting city\ground, time-steps to collision.
 * **Relevancy** - whether the missile is already on its way to be intercepted 
@@ -49,7 +51,7 @@ A decision-making algorithm, which chooses the highest-profile rocket (target) a
 * **Opportunity level** - proximity to fire angle, ability to fire 
 (when not in cooldown mode).
 
-one of the main challenges here was achieving a correct interpretation 
+One of the main challenges here was achieving a correct interpretation 
 of the rockets & interceptors lists in the observation vector 
 (and specifically identifying appearance & disappearance of rockets & interceptors).
 
