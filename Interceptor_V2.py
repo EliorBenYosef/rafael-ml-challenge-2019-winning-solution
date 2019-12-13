@@ -273,10 +273,3 @@ def Game_step(action_button):
         c_locs[ind, :] = [city_list[ind].x, city_list[ind].width]
 
     return r_locs, i_locs, c_locs, turret.ang, world.score
-
-
-
-
-
-
-
