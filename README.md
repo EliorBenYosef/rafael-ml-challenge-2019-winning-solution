@@ -57,14 +57,14 @@ of the rockets & interceptors lists in the observation vector
 
 ##### Denominator testing (with initial angle 6°, np seed: 28)
 
-* config 0 - `denominator *= (t_to_fire_angle + 1)`. 
+* **config 0** - `denominator *= (t_to_fire_angle + 1)`. 
 Handles the `t_to_fire_angle == 0` problem.
-* config 1 - `denominator *= (t_to_fire_angle + 1) if t_to_fire_angle > fire_action_range else 1`. 
+* **config 1** - `denominator *= (t_to_fire_angle + 1) if t_to_fire_angle > fire_action_range else 1`. 
 Further penalizes high `t_to_fire_angle` missiles.
-* config 2 - `denominator *= (t_to_fire_angle + 1) if t_to_fire_angle >= fire_action_range + fire_threshold else 1`. 
+* **config 2** - `denominator *= (t_to_fire_angle + 1) if t_to_fire_angle >= fire_action_range + fire_threshold else 1`. 
 Further penalizes only extremely high `t_to_fire_angle` missiles.
 
-The Denominator was config 1 -
+The optimal denominator was config 1 -
 
 <p float="left">
   <img src="https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution/blob/master/phase_2_solution_algorithm/results/denominator_config.png" width="650">
