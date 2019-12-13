@@ -76,16 +76,10 @@ The initial angle is the desired barrel angle, when there are no enemy rockets i
 
 The optimal initial angle was 60° -
 
-. | avg | median
---- | --- | ---
-**6°** | 9.876 | 12.0
-**48°** | 5.926 | 26.5
-**54°** | 16.173 | 15.5
-**60°** | 32.483 | 69.0
-**66°** | 24.423 | 51.0
-**72°** | 17.506 | 39.0
-**78°** | 22.546 | 28.5
-**84°** | 19.613 | 40.0
+. | 6° | 48° | 54° | 60° | 66° | 72° | 78° | 84° 
+--- | --- | --- | --- | --- | --- | --- | --- | ---
+**avg** | 9.876 | 5.926 | 16.173 | **32.483** | 24.423 | 17.506 | 22.546 | 19.613
+**median** | 12.0 | 26.5 | 15.5 | **69.0** | 51.0 | 39.0 | 28.5 | 40.0
 
 <p float="left">
   <img src="https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution/blob/master/phase_2_solution_algorithm/results/init_ang.png" width="550">
