@@ -196,81 +196,12 @@ class City:
         self.width = 800  # [m]
 
 
-class Artist:
-
-    def __init__(self):
-        self.game_height = 6500
-        self.game_width = 10000
-        conv_ratio = 25  # 20 --> (325, 500) px  # 25 --> (260, 400) px
-
-        self.frames_stack_size = 4
-        self.image_pixels = (self.game_height // conv_ratio, self.game_width // conv_ratio)
-
-        self.fig = self.create_figure()
-
-        self.rocket_radius = 25
-        self.city_height = 100
-        self.barrel_length = 300
-
-    def reset_figure(self):
-        self.fig = self.create_figure()
-
-    def create_figure(self):
-        fig = plt.figure(figsize=(self.image_pixels[1]/100, self.image_pixels[0]/100), dpi=100)  # width, height
-        ax = fig.add_axes([0., 0., 1., 1.])
-        ax.set_facecolor('black')
-        ax.set_xlim(-self.game_width / 2, self.game_width / 2)
-        ax.set_ylim(0, self.game_height)
-        return fig
-
-    def render(self, observation):
-        ax = self.fig.gca()
-
-        rockets = []
-        for r in observation[0]:
-            rockets.append(plt.Circle((r[0], r[1]), radius=self.rocket_radius, fill=True, color='white'))
-        # default zOrder: Patch\Coll 1, Line2D\Coll 2, Text 3.
-        rockets_pc = PatchCollection(rockets, match_original=True, zorder=4)
-        ax.add_collection(rockets_pc)
-
-        for i in observation[1]:
-            ax.add_patch(plt.Circle((i[0], i[1]), radius=150-self.rocket_radius, fill=True, color='#7F7F7F'))  # Grayscale 50%
-
-        for c in observation[2]:
-            ax.add_patch(plt.Rectangle((c[0]-c[1]/2, 0), width=c[1], height=self.city_height, color='#3F3F3F'))  # Grayscale 25%
-
-        ax.plot([-2000, -2000 + self.barrel_length * np.sin(np.deg2rad(observation[3]))],
-                [0, self.barrel_length * np.cos(np.deg2rad(observation[3]))],
-                linewidth=3, color='#BFBFBF')  # Grayscale 75%
-
-        plt.draw()
-        plt.pause(0.001)
-
-        self.fig.canvas.draw()
-        X = np.array(self.fig.canvas.renderer._renderer, dtype=np.uint8)  # channels: RGBA (Alpha)
-        # Image.fromarray(X[:, :, :3], 'RGB').save('screen.png')  # save to file
-
-        # preprocess:
-        X = X[:, :, 0]  # take a single channel (all are equal since it's grayscale)
-        # Image.fromarray(X, 'L').save('screen.png')  # save to file
-
-        [c.remove() for c in reversed(ax.collections)]
-        [p.remove() for p in reversed(ax.patches)]
-        [l.remove() for l in reversed(ax.lines)]
-
-        return X
-
-
 class Game:
 
     def __init__(self, single_rocket_restriction=False, assessment=False, visualize=False):
         self.ep_max_steps = 1000
         self.single_rocket_restriction = single_rocket_restriction
         self.assessment = assessment
-
-        self.visualize = visualize
-        if self.visualize:
-            self.artist = Artist()
 
         self.world = World()
         self.turret_friendly = FriendlyTurret(self.assessment)     # mine
@@ -286,10 +217,6 @@ class Game:
         self.total_interceptors = []    # mine
 
         self.first_rocket_fired = False
-
-    def enable_artist(self):
-        self.visualize = True
-        self.artist = Artist()
 
     def add_cities(self):
         self.cities.append(City(-self.world.width * 0.50 + 400, -self.world.width * 0.25 - 400))
@@ -335,10 +262,6 @@ class Game:
         else:
             done = self.world.time_step_index == self.ep_max_steps - 1
 
-        if self.visualize:
-            self.artist.render(observation)
-
-        # return observation, self.world.game_score
         return observation, self.world.step_reward, done
 
     def step_world(self, action_button):

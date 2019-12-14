@@ -89,9 +89,6 @@ The optimal initial angle was 60° -
 
 ## Algorithm Performance
 
-The following video presents the performance of the **first version** of the algorithm 
-(a video of the final version of the algorithm will be uploaded shortly):
-
 <p float="left">
   <img src="https://github.com/EliorBenYosef/rafael-ml-challenge-2019-winning-solution/blob/master/phase_2_solution_algorithm/results/algorithm_performance.gif" width="500">
 </p>

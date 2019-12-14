@@ -1,4 +1,4 @@
-from .usage_example import run
+from phase_2_solution_algorithm.usage_example import run
 import argparse
 
 

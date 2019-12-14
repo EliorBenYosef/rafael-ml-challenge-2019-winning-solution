@@ -15,7 +15,7 @@ import keras.models as models
 import utils
 from networks_builder import NetworksBuilder
 
-from .Interceptor_V2_training import Game, \
+from phase_1_networks_training.Interceptor_V2_training import Game, \
     ACTION_LEFT, ACTION_NONE, ACTION_RIGHT, ACTION_FIRE, \
     COLLISION_TYPE_GROUND, COLLISION_TYPE_CITY, COLLISION_TYPE_ROCKET
 

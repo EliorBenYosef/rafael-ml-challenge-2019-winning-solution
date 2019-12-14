@@ -1,5 +1,5 @@
 import argparse
-from .training_op import main_cloud
+from phase_1_networks_training.training_op import main_cloud
 
 
 def parse_args():

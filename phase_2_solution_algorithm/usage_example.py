@@ -3,7 +3,7 @@ seed(1)
 import pickle
 import datetime
 
-from .solution import Solution
+from phase_2_solution_algorithm.solution import Solution
 from Interceptor_V2 import Init, Draw, Game_step
 from utils import Plotter
 
