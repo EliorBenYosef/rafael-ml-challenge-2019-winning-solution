@@ -25,21 +25,29 @@ fc_layers_dims_pre_fire_interception_assessment = [512, 512, 512]
 fc_layers_dims_pre_fire_interception_time_steps_assessment = [512, 512, 512]
 
 
+INDEX_ROCKET = 0
+INDEX_INTERCEPTOR = 1
+
+
 def get_state(observation, prev_s):
-    r_data_list = update_observation(observation, prev_s, 0)
-    i_data_list = update_observation(observation, prev_s, 1)
+    r_data_list = update_observation(observation, prev_s, INDEX_ROCKET)
+    i_data_list = update_observation(observation, prev_s, INDEX_INTERCEPTOR)
     cities_data = get_cities_data(observation[2])
     return r_data_list, i_data_list, cities_data, observation[3]
 
 
 def update_observation(observation, prev_s, index):
+    """
+    adds deltas to the observation's coordinates.
+    in case of rockets - also adds distance & angle from the (friendly) turret.
+    """
     coordinates = observation[index]
     prev_data = prev_s[index] if prev_s is not None and prev_s[index] is not None else []
 
     if len(coordinates) != 0:
 
         deltas = np.zeros((coordinates.shape[0], 2))
-        if index == 0:
+        if index == INDEX_ROCKET:
             additional = np.zeros((coordinates.shape[0], 2))
 
         for i in range(len(coordinates)):
@@ -48,22 +56,25 @@ def update_observation(observation, prev_s, index):
             while not match_found:
 
                 # new interceptor (starts with coordinates (-2000, 0)):
-                if index == 1 and coordinates[i][0] == -2000 and coordinates[i][1] == 0:
+                if index == INDEX_INTERCEPTOR and coordinates[i][0] == -2000 and coordinates[i][1] == 0:
                     deltas[i, 0] = 0
                     deltas[i, 1] = 0
                     match_found = True
                     break
 
                 # any rocket or existing interceptors:
-                if index == 0 and (len(prev_data) == 0 or len(prev_data) < i + 1):  # new rocket (in an empty or non-empty list)
-                    # meaning: no previous data exists (will never happen for an interceptor because we get the static starting point)
+                if index == INDEX_ROCKET and (len(prev_data) == 0 or len(prev_data) < i + 1):
+                    # new rocket (in an empty or non-empty list)
+                    # meaning: no previous data exists
+                    #   (will never happen for an interceptor because we get the static starting point)
                     first_move = True
-                    x_prev = 4800  # [m]  # -2000 if index == 1 else 4800
+                    x_prev = 4800  # [m]  # -2000 if index == INDEX_INTERCEPTOR else 4800
                     y_prev = 0
                     dx_prev = 0
                     dy_prev = 0
                 else:
-                    if index == 1 and prev_data[i][0] == -2000 and prev_data[i][1] == 0:  # first move of a new interceptor
+                    if index == INDEX_INTERCEPTOR and prev_data[i][0] == -2000 and prev_data[i][1] == 0:
+                        # first move of a new interceptor
                         first_move = True
                     x_prev = prev_data[i][0]
                     y_prev = prev_data[i][1]
@@ -74,26 +85,30 @@ def update_observation(observation, prev_s, index):
                 dy_curr = coordinates[i][1] - y_prev
 
                 if len(prev_data) > i and (np.abs(dx_curr) > 180 or np.abs(dy_curr) > 180):
-                    # print('R' if index == 0 else 'I', 'is gone:', prev_data[i][:4])
+                    # print('R' if index == INDEX_ROCKET else 'I', 'is gone:', prev_data[i][:4])
                     prev_data = np.delete(prev_data, i, 0)
 
                 else:
                     # first condition - interceptor was fired at 0° ang
-                    if (index == 1 and not first_move and coordinates[i][0] == x_prev == -2000) \
-                            or (first_move or (0.9 < dx_curr / dx_prev < 1.15)):  # bounds: 0.896, 1.18 ; must include: 1.119
-                        # in case of a previous 0° interceptor that disappeared - dx_curr / dx_prev == inf ; math.isinf(dx_curr / dx_prev) == True
+                    if (index == INDEX_INTERCEPTOR and not first_move and coordinates[i][0] == x_prev == -2000) \
+                            or (first_move or (0.9 < dx_curr / dx_prev < 1.15)):
+                        # bounds: 0.896, 1.18 ; must include: 1.119
+                        # in case of a previous 0° interceptor that disappeared:
+                        #   dx_curr / dx_prev == inf
+                        #   math.isinf(dx_curr / dx_prev) == True
                         deltas[i, 0] = dx_curr
                         deltas[i, 1] = dy_curr
                         match_found = True
-                    elif index == 1 and dx_curr == 0 and dy_curr == 0:  # some interceptors don't move properly ('freeze' for a time-step)
+                    elif index == INDEX_INTERCEPTOR and dx_curr == 0 and dy_curr == 0:
+                        # some interceptors don't move properly ('freeze' for a time-step)
                         deltas[i, 0] = dx_prev
                         deltas[i, 1] = dy_prev
                         match_found = True
                     else:  # previous rocket \ interceptor is gone
-                        # print('R' if index == 0 else 'I', 'is gone:', prev_data[i][:4])
+                        # print('R' if index == INDEX_ROCKET else 'I', 'is gone:', prev_data[i][:4])
                         prev_data = np.delete(prev_data, i, 0)
 
-                if index == 0 and match_found:
+                if index == INDEX_ROCKET and match_found:
                     delta_x = coordinates[i][0] - (-2000)
                     delta_y = coordinates[i][1] - 0
                     dist = math.sqrt(math.pow(delta_x, 2) + math.pow(delta_y, 2))
@@ -106,23 +121,37 @@ def update_observation(observation, prev_s, index):
 
         # if len(prev_data) > len(coordinates):
         #     for prev in prev_data[len(coordinates):]:
-        #         print('R' if index == 0 else 'I', 'is gone:', prev[:4])
+        #         print('R' if index == INDEX_ROCKET else 'I', 'is gone:', prev[:4])
 
-        return np.hstack((coordinates, deltas, additional) if index == 0 else (coordinates, deltas))
+        return np.hstack((coordinates, deltas, additional) if index == INDEX_ROCKET else (coordinates, deltas))
 
 
 def get_cities_data(cities):
-    return np.array([cities[0, 0] - cities[0, 1] / 2, cities[0, 0] + cities[0, 1] / 2,
-                     cities[1, 0] - cities[1, 1] / 2, cities[1, 0] + cities[1, 1] / 2])
+    """
+    outputs the two cities' x (left & right) borders
+    :param cities: [(center_pt_1, width_1), (center_pt_2, width_2)]
+    :return: [c1_x_left_border, c1_x_right_border, c2_x_left_border, c2_x_right_border]
+    """
+    c1_x_left_border = cities[0, 0] - cities[0, 1] / 2
+    c1_x_right_border = cities[0, 0] + cities[0, 1] / 2
+    c2_x_left_border = cities[1, 0] - cities[1, 1] / 2
+    c2_x_right_border = cities[1, 0] + cities[1, 1] / 2
+
+    return np.array([c1_x_left_border, c1_x_right_border,
+                     c2_x_left_border, c2_x_right_border])
 
 
 class Agent:
 
     def __init__(self):
-        self.fire_ang_assessment = NetworksBuilder.build_fire_ang_assessment_network()
-        self.collision_assessment, self.collision_time_steps_assessment = NetworksBuilder.build_collision_assessment_networks()
-        self.interception_assessment, self.interception_time_steps_assessment = NetworksBuilder.build_interception_assessment_networks()
-        self.pre_fire_interception_assessment, self.pre_fire_interception_time_steps_assessment = NetworksBuilder.build_pre_fire_interception_assessment_networks()
+        self.fire_ang_assessment = \
+            NetworksBuilder.build_fire_ang_assessment_network()
+        self.collision_assessment, self.collision_time_steps_assessment = \
+            NetworksBuilder.build_collision_assessment_networks()
+        self.interception_assessment, self.interception_time_steps_assessment = \
+            NetworksBuilder.build_interception_assessment_networks()
+        self.pre_fire_interception_assessment, self.pre_fire_interception_time_steps_assessment = \
+            NetworksBuilder.build_pre_fire_interception_assessment_networks()
 
         base_dir = 'weights/'
         self.fire_ang_assessment.load_weights(base_dir + 'ac_keras_fire_angle_weights.h5')
@@ -131,7 +160,8 @@ class Agent:
         self.interception_assessment.load_weights(base_dir + 'ac_keras_interception_weights.h5')
         self.interception_time_steps_assessment.load_weights(base_dir + 'ac_keras_interception_time_steps_weights.h5')
         self.pre_fire_interception_assessment.load_weights(base_dir + 'ac_keras_pre_fire_interception_weights.h5')
-        self.pre_fire_interception_time_steps_assessment.load_weights(base_dir + 'ac_keras_pre_fire_interception_time_steps_weights.h5')
+        self.pre_fire_interception_time_steps_assessment.load_weights(
+            base_dir + 'ac_keras_pre_fire_interception_time_steps_weights.h5')
 
     def predict_fire_angle(self, s):
         s = np.array(s)
@@ -259,7 +289,7 @@ class Rocket:
         self.final_preference_score = 0
 
 
-class InterceptibleRocket(Rocket):
+class InterceptableRocket(Rocket):
 
     def __init__(self, collision_classification, t_to_collision,
                  t_to_pre_fire_interception_from_fire_ang, fire_angle, current_ang):
@@ -286,10 +316,10 @@ class InterceptibleRocket(Rocket):
         self.final_preference_score = self.weighted_preference_score
 
 
-optimal_initial_angle = 60
+optimal_initial_angle = 60  # Empirically determined
 fire_threshold = 7 + 1  # reload_time // dt = 1.5 // 0.2 = 7 (this is the cooldown period)
-steps_since_fire = fire_threshold                       # range: 1+ (min 1)
-fire_action_range = fire_threshold - steps_since_fire   # range: 7- (max 7)
+steps_since_fire = fire_threshold                       # range: [1,inf]
+fire_action_range = fire_threshold - steps_since_fire   # range: [-inf,7]
 
 config = 0
 use_gpu = False
@@ -343,7 +373,7 @@ class Solution:
 
         #############################################################
 
-        # 1. gather data for every rocket - do all non-interceptor related rockets assessments
+        # 1. gather data for every rocket data - do all non-interceptor related rockets assessments
         fire_angle_list = self.agent.predict_fire_angle(r_data_list)
         fire_angle_list_step_round_down = (fire_angle_list // 6) * 6
         fire_angle_list_step_round_up = (fire_angle_list // 6 + 1) * 6
@@ -353,18 +383,22 @@ class Solution:
         rocket_fire_ang_data_step_round_up = np.zeros((len(r_data_list), 7), dtype=np.float32)
         for r_index, r_data in enumerate(r_data_list):
             rocket_cities_data[r_index] = np.array([*r_data[:4], *cities_data], dtype=np.float32)
-            rocket_fire_ang_data_step_round_down[r_index] = np.array([*r_data, fire_angle_list_step_round_down[r_index]], dtype=np.float32)
-            rocket_fire_ang_data_step_round_up[r_index] = np.array([*r_data, fire_angle_list_step_round_up[r_index]], dtype=np.float32)
+            rocket_fire_ang_data_step_round_down[r_index] = \
+                np.array([*r_data, fire_angle_list_step_round_down[r_index]], dtype=np.float32)
+            rocket_fire_ang_data_step_round_up[r_index] = \
+                np.array([*r_data, fire_angle_list_step_round_up[r_index]], dtype=np.float32)
 
         collision_classification_list = self.agent.predict_collision(rocket_cities_data)
         time_steps_to_collision_list = self.agent.predict_time_steps_to_collision(rocket_cities_data)
 
-        fire_ang_step_round_down_pre_fire_interception_list = self.agent.predict_pre_fire_interception(rocket_fire_ang_data_step_round_down)
-        fire_ang_step_round_up_pre_fire_interception_list = self.agent.predict_pre_fire_interception(rocket_fire_ang_data_step_round_up)
+        fire_ang_step_round_down_pre_fire_interception_list = \
+            self.agent.predict_pre_fire_interception(rocket_fire_ang_data_step_round_down)
+        fire_ang_step_round_up_pre_fire_interception_list = \
+            self.agent.predict_pre_fire_interception(rocket_fire_ang_data_step_round_up)
 
         #############################################################
 
-        # 2. set data for each rocket ('t' = 'time_steps')
+        # 2. create Rocket objects & set data for each rocket ('t' = 'time_steps')
         r_objects_list = []
         for r_index in range(len(r_data_list)):
 
@@ -373,8 +407,9 @@ class Solution:
             t_to_collision = time_steps_to_collision_list[r_index][0]
             t_to_collision = 1 if t_to_collision < 1 else int(round(t_to_collision))
 
-            is_interceptable = fire_ang_step_round_down_pre_fire_interception_list[r_index] == INTERCEPTION_TYPE_HIT or \
-                               fire_ang_step_round_up_pre_fire_interception_list[r_index] == INTERCEPTION_TYPE_HIT
+            is_interceptable = \
+                fire_ang_step_round_down_pre_fire_interception_list[r_index] == INTERCEPTION_TYPE_HIT or \
+                fire_ang_step_round_up_pre_fire_interception_list[r_index] == INTERCEPTION_TYPE_HIT
 
             if not is_interceptable:
                 r_objects_list.append(Rocket(collision_classification, t_to_collision))
@@ -389,7 +424,7 @@ class Solution:
                     np.array([[*r_data_list[r_index], fire_angle]], dtype=np.float32))[0, 0]
                 t_to_pre_fire_interception_from_fire_ang = int(round(t_to_pre_fire_interception_from_fire_ang))
 
-                r_objects_list.append(InterceptibleRocket(
+                r_objects_list.append(InterceptableRocket(
                     collision_classification, t_to_collision,
                     t_to_pre_fire_interception_from_fire_ang, fire_angle, current_ang))
 
@@ -405,18 +440,19 @@ class Solution:
                 if i_data[1] == 0:  # if i_y == 0 : an interceptor that was just fired
                     break
 
-                interceptor_rockets_data = np.zeros((len(r_data_list), 8), dtype=np.float32)
+                i_rockets_data = np.zeros((len(r_data_list), 8), dtype=np.float32)
                 for r_index, r_data in enumerate(r_data_list):
-                    interceptor_rockets_data[r_index] = np.array([*r_data[:4], *i_data], dtype=np.float32)
+                    i_rockets_data[r_index] = np.array([*r_data[:4], *i_data], dtype=np.float32)
 
-                interception_classification_list = self.agent.predict_interception(interceptor_rockets_data)
-                time_steps_to_interception_list = self.agent.predict_time_steps_to_interception(interceptor_rockets_data)
+                interception_classification_list = self.agent.predict_interception(i_rockets_data)
+                time_steps_to_interception_list = self.agent.predict_time_steps_to_interception(i_rockets_data)
 
                 for r_index, r_data in enumerate(r_data_list):
                     if interception_classification_list[r_index] == INTERCEPTION_TYPE_HIT:
 
                         time_steps_to_interception = time_steps_to_interception_list[r_index][0]
-                        time_steps_to_interception = 1 if time_steps_to_interception < 1 else int(round(time_steps_to_interception))
+                        time_steps_to_interception = 1 if time_steps_to_interception < 1 else \
+                            int(round(time_steps_to_interception))
 
                         if time_steps_to_interception in interceptions_by_time_steps_dict:
                             interceptions_by_i_dict = interceptions_by_time_steps_dict[time_steps_to_interception]
