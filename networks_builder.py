@@ -51,7 +51,7 @@ class NetworksBuilder:
         x = layers.Dense(fc_layers_dims_collision_assessment[0], activation='relu')(rocket_cities)
         x = layers.Dense(fc_layers_dims_collision_assessment[1], activation='relu')(x)
         x = layers.Dense(fc_layers_dims_collision_assessment[2], activation='relu')(x)
-        x = layers.Dense(2, activation='sigmoid', name='collision_assessment')(x)
+        x = layers.Dense(1, activation='sigmoid', name='collision_assessment')(x)
         collision_assessment = models.Model(inputs=rocket_cities, outputs=x)
         if optimizer_type is not None and ALPHA is not None:
             optimizer = utils.Optimizers.keras_get_optimizer(optimizer_type, ALPHA)
@@ -84,7 +84,7 @@ class NetworksBuilder:
         x = layers.Dense(fc_layers_dims_interception_assessment[0], activation='relu')(rocket_interceptor)
         x = layers.Dense(fc_layers_dims_interception_assessment[1], activation='relu')(x)
         x = layers.Dense(fc_layers_dims_interception_assessment[2], activation='relu')(x)
-        x = layers.Dense(2, activation='sigmoid', name='interception_assessment')(x)
+        x = layers.Dense(1, activation='sigmoid', name='interception_assessment')(x)
         interception_assessment = models.Model(inputs=rocket_interceptor, outputs=x)
         if optimizer_type is not None and ALPHA is not None:
             optimizer = utils.Optimizers.keras_get_optimizer(optimizer_type, ALPHA)
@@ -117,7 +117,7 @@ class NetworksBuilder:
         x = layers.Dense(fc_layers_dims_pre_fire_interception_assessment[0], activation='relu')(rocket_pre_fire_interceptor)
         x = layers.Dense(fc_layers_dims_pre_fire_interception_assessment[1], activation='relu')(x)
         x = layers.Dense(fc_layers_dims_pre_fire_interception_assessment[2], activation='relu')(x)
-        x = layers.Dense(2, activation='sigmoid', name='pre_fire_interception_assessment')(x)
+        x = layers.Dense(1, activation='sigmoid', name='pre_fire_interception_assessment')(x)
         pre_fire_interception_assessment = models.Model(inputs=rocket_pre_fire_interceptor, outputs=x)
         if optimizer_type is not None and ALPHA is not None:
             optimizer = utils.Optimizers.keras_get_optimizer(optimizer_type, ALPHA)
