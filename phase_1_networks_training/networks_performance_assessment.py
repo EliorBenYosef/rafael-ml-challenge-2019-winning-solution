@@ -1,7 +1,7 @@
 from numpy.random import seed
 seed(1)
-from tensorflow import set_random_seed
-set_random_seed(1)
+import tensorflow as tf
+tf.random.set_seed(1)
 
 import numpy as np
 import datetime

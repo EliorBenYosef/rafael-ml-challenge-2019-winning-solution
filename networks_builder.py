@@ -1,5 +1,5 @@
-import keras.models as models
-import keras.layers as layers
+import tensorflow.python.keras.models as models
+import tensorflow.python.keras.layers as layers
 
 import utils
 

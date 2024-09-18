@@ -7,9 +7,9 @@ import pickle
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 
-import keras.backend.tensorflow_backend as keras_tensorflow_backend
-from keras.backend import set_session as keras_set_session
-import keras.optimizers as optimizers
+import tensorflow.python.keras.backend as keras_tensorflow_backend
+from tensorflow.python.keras.backend import set_session as keras_set_session
+import tensorflow.python.keras.optimizers as optimizers
 
 
 class Plotter:

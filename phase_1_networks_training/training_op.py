@@ -1,16 +1,15 @@
 from numpy.random import seed
 seed(1)
-from tensorflow import set_random_seed
-set_random_seed(1)
+import tensorflow as tf
+tf.random.set_seed(1)
 
 import os
 
 import numpy as np
 import datetime
-import tensorflow as tf
 
-import keras.backend as K
-import keras.models as models
+import tensorflow.python.keras.backend as K
+import tensorflow.python.keras.models as models
 
 import utils
 from networks_builder import NetworksBuilder
